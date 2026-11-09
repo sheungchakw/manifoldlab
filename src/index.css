@@ -36,6 +36,11 @@ body {
   font-size: 1.02em;
 }
 
+/* Docked leva panel inherits the dark theme */
+.leva-panel-dock > div {
+  background: transparent !important;
+}
+
 /* Thin scrollbars for panels */
 *::-webkit-scrollbar {
   width: 8px;
