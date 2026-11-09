@@ -1,11 +1,39 @@
-import { Suspense } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Suspense, useEffect, useState } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { LevaPanel, useCreateStore } from 'leva'
 import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 import type { ChapterModule } from '@/chapters/types'
 import { useUIStore } from '@/store'
 import { cn } from '@/lib/utils'
+
+/**
+ * Forces a resize after mount and on container size changes. Guards against
+ * R3F v9 attaching the canvas at 0x0 inside flex layouts (dev/HMR).
+ */
+function ResizeGuard() {
+  const invalidate = useThree((s) => s.invalidate)
+  useEffect(() => {
+    invalidate()
+    const t = setTimeout(() => window.dispatchEvent(new Event('resize')), 60)
+    return () => clearTimeout(t)
+  }, [invalidate])
+  return null
+}
+
+/**
+ * Delays Canvas mount by one frame so the flex container has laid out and
+ * has non-zero size (avoids 0x0 canvas attach in dev).
+ */
+function DeferredCanvas({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setReady(true))
+    return () => cancelAnimationFrame(raf)
+  }, [])
+  if (!ready) return <CanvasFallback />
+  return <>{children}</>
+}
 
 function CanvasFallback() {
   return (
@@ -29,20 +57,24 @@ export function DemoShell({ module }: { module: ChapterModule }) {
     <div className="relative flex min-h-0 flex-1">
       {/* 3D canvas */}
       <div className="relative min-w-0 flex-1">
-        <Canvas
-          camera={{ position: [4, 3, 5], fov: 45 }}
-          dpr={[1, 2]}
-          gl={{ antialias: true }}
-        >
-          <color attach="background" args={['#0a0a0f']} />
-          <ambientLight intensity={0.45} />
-          <directionalLight position={[6, 8, 4]} intensity={1.1} />
-          <directionalLight position={[-5, -3, -6]} intensity={0.25} />
-          <Suspense fallback={null}>
-            <Scene store={store} />
-          </Suspense>
-          <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
-        </Canvas>
+        <DeferredCanvas>
+          <Canvas
+            camera={{ position: [4, 3, 5], fov: 45 }}
+            dpr={[1, 2]}
+            gl={{ antialias: true }}
+            resize={{ scroll: false, debounce: { scroll: 50, resize: 60 } }}
+          >
+            <color attach="background" args={['#0a0a0f']} />
+            <ambientLight intensity={0.45} />
+            <directionalLight position={[6, 8, 4]} intensity={1.1} />
+            <directionalLight position={[-5, -3, -6]} intensity={0.25} />
+            <ResizeGuard />
+            <Suspense fallback={null}>
+              <Scene store={store} />
+            </Suspense>
+            <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
+          </Canvas>
+        </DeferredCanvas>
 
         {/* Panel toggle (mobile + collapsed state) */}
         <button
