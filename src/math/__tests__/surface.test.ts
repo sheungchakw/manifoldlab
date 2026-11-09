@@ -99,6 +99,18 @@ describe('ParametricSurface: fundamental forms', () => {
     expect(t.classify(0.5, Math.PI / 2)).toBe('parabolic')
   })
 
+  it('principal directions in UV align with coordinate directions on a torus', () => {
+    const t = makeTorus()
+    const { d1, d2, umbilic } = t.principalDirectionsUV(1.3, 0.7)
+    expect(umbilic).toBe(false)
+    // Each direction should be (approximately) purely du or purely dv
+    const d1IsU = Math.abs(d1.dv) < 1e-3
+    const d2IsU = Math.abs(d2.dv) < 1e-3
+    expect(d1IsU).not.toBe(d2IsU)
+    // Unit speed w.r.t. the metric
+    expect(t.metricSpeed(1.3, 0.7, d1.du, d1.dv)).toBeCloseTo(1, 5)
+  })
+
   it('principal directions are orthogonal unit tangent vectors (torus, non-umbilic)', () => {
     const t = makeTorus()
     const { dir1, dir2 } = t.principalDirections(1.3, 0.7)
