@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, AdaptiveDpr } from '@react-three/drei'
 import { LevaPanel, useCreateStore } from 'leva'
 import { PanelRightClose, PanelRightOpen } from 'lucide-react'
 import type { ChapterModule } from '@/chapters/types'
@@ -72,6 +72,7 @@ export function DemoShell({ module }: { module: ChapterModule }) {
             <Suspense fallback={null}>
               <Scene store={store} />
             </Suspense>
+            <AdaptiveDpr pixelated />
             <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
           </Canvas>
         </DeferredCanvas>

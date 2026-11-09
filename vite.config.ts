@@ -12,6 +12,25 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      output: {
+        advancedChunks: {
+          groups: [
+            {
+              name: 'three-vendor',
+              test: /node_modules[\\/].*(three|@react-three|three-stdlib|maath|detect-gpu|meshline)/,
+            },
+            {
+              name: 'react-vendor',
+              test: /node_modules[\\/](react|react-dom|scheduler|react-router)/,
+            },
+          ],
+        },
+      },
+    },
+  },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
