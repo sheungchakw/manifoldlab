@@ -153,6 +153,36 @@ export class ParametricSurface {
   }
 
   /**
+   * Principal directions in parameter space: eigenvectors of the shape
+   * operator, normalized w.r.t. the metric (unit speed). Used to integrate
+   * lines of curvature. Falls back to coordinate directions at umbilics.
+   */
+  principalDirectionsUV(
+    u: number,
+    v: number,
+  ): { d1: { du: number; dv: number }; d2: { du: number; dv: number }; umbilic: boolean } {
+    const S = this.shapeOperator(u, v)
+    const { k1, k2 } = this.principalCurvatures(u, v)
+    const umbilic = Math.abs(k1 - k2) < 1e-6 * Math.max(1, Math.abs(k1), Math.abs(k2))
+
+    const normalize = (a: number, b: number): { du: number; dv: number } => {
+      const s = this.metricSpeed(u, v, a, b)
+      return s < 1e-9 ? { du: 1, dv: 0 } : { du: a / s, dv: b / s }
+    }
+
+    if (umbilic) {
+      return { d1: normalize(1, 0), d2: normalize(0, 1), umbilic: true }
+    }
+    const eigen = (k: number): { du: number; dv: number } => {
+      const [[a, b], [c, d]] = S
+      if (Math.abs(b) > 1e-9) return normalize(b, k - a)
+      if (Math.abs(c) > 1e-9) return normalize(k - d, c)
+      return normalize(1, 0)
+    }
+    return { d1: eigen(k1), d2: eigen(k2), umbilic: false }
+  }
+
+  /**
    * Principal directions as 3D unit tangent vectors.
    * At umbilics (k1 = k2) returns the coordinate directions instead.
    */
