@@ -1,17 +1,21 @@
 # ManifoldLab
 
-**Interactive differential geometry in the browser** — curves, surfaces, curvature, geodesics and the great global theorems, every quantity computed live from the parametrizations.
+### [→ Open the live lab (tap here)](https://sheungchakw.github.io/manifoldlab/)
+
+**Poster / QR visitors:** this repository page is the source hub. The interactive product is the site above — open it in your browser (nothing to install).
+
+[![Open ManifoldLab](https://img.shields.io/badge/Live_lab-sheungchakw.github.io%2Fmanifoldlab-111827?style=for-the-badge&labelColor=0a7ea4)](https://sheungchakw.github.io/manifoldlab/)
+
+Interactive differential geometry in the browser — curves and surfaces through Gauss–Bonnet, with quantities computed live as you drag the shape.
 
 ![Curvature colormap on the torus](docs/screenshots/curvature.png)
 
 ## Chapters
 
-1. **Curves & Frenet–Serret** — animated TNB frames (with rotation-minimizing fallback at inflections), live κ/τ plots, osculating circles and planes, arc-length reparametrization, knots (trefoil, figure-eight, torus knots, Viviani), total curvature and Fenchel/Fary–Milnor readouts.
-2. **Surfaces & Fundamental Forms** — a parametric surface engine with a probe reading E, F, G / L, M, N, area element, tangent plane and normal field at any point of any catalog surface.
-3. **Curvature Visualization** — real-time K and H colormaps (custom shader injection), point classification (elliptic/parabolic/hyperbolic/planar), principal direction fields, lines of curvature integrated on the surface, umbilic markers, Gauss map, and a Theorema-Egregium bending demo.
-4. **Geodesics & Parallel Transport** — geodesic shooting from any point/direction (Christoffel-driven RK4), fan mode showing conjugate-point refocusing, parallel transport along latitude circles with holonomy readout, Clairaut conservation verified to ~10⁻¹³, and the κ² = κₙ² + κ_g² decomposition.
-5. **Gauss–Bonnet & Global Theorems** — drag the vertices of a spherical geodesic triangle and watch α+β+γ−π agree with ∬K dA (computed independently via the solid-angle formula); total curvature ∬K dA = 2πχ integrated numerically; Willmore energy.
-6. **Special Surfaces Gallery** — minimal-surface certificate (|H| ≈ 0) for catenoid/helicoid/Enneper/Scherk, the catenoid↔helicoid isometric deformation, cylinder unrolling (developables), Möbius-strip non-orientability walk, and a Klein bottle immersion.
+1. **Geometry of Curves** — regular and non-degenerate curves, arc-length, κ and τ, the Frenet–Serret frame, the fundamental theorem, and signed curvature k on a plane curve.
+2. **Regular Surfaces** — local parametrizations, the tangent plane, level sets (including the cone, where ∇g = 0), and transition maps.
+3. **Geometry of Euclidean Surfaces** — the first fundamental form g, the Gauss map ν, normal curvature k_n, K and H, Christoffel symbols, and the Theorema egregium.
+4. **Gauss–Bonnet’s Theorem** — geodesics as curves with k_g = 0, a draggable curved triangle with exterior angles, and ∫_Σ K dS = 2πχ(Σ).
 
 | Curves | Gauss–Bonnet |
 | --- | --- |
@@ -24,10 +28,10 @@
 - `differentiate.ts` — central-difference partial derivatives
 - `ode.ts` — RK4 and adaptive RKF45 integrators
 - `curve.ts` — arc-length reparametrization, Frenet frames, κ, τ, osculating circles, rotation-minimizing frames (double-reflection method)
-- `surface.ts` — first/second fundamental forms, shape operator, principal curvatures/directions, Christoffel symbols from the metric, geodesic ODE, parallel transport, ∬K dA and Willmore integrators
-- `catalog.ts` — named curves and surfaces (helix…Klein bottle)
+- `surface.ts` — first and second fundamental forms, principal curvatures, Christoffel symbols from g, the geodesic equation, and ∫ K dS
+- `catalog.ts` — the curves and surfaces used in Chapters 1–3 (helix, circle, ellipse, sphere, torus, graphs, ellipsoid, cylinder, cone)
 
-Tests verify, among others: sphere K = 1/R², catenoid H = 0, helix κ/τ closed forms, torus K sign by region, great-circle closure, and latitude holonomy = 2π·cos(v₀).
+Tests verify, among others: sphere K = 1/R², helix κ and τ, and the sign of K on the torus.
 
 ## Stack
 
@@ -51,9 +55,8 @@ pnpm build         # production build → dist/
 pnpm preview       # serve the production build
 ```
 
-## Deploy (Vercel)
+## Deploy
 
-`vercel.json` already contains the SPA rewrite. Either:
+Live site: [sheungchakw.github.io/manifoldlab](https://sheungchakw.github.io/manifoldlab/) (GitHub Pages).
 
-- import the GitHub repo at [vercel.com/new](https://vercel.com/new) — zero config, auto-deploys on every push, or
-- `pnpm dlx vercel link && pnpm dlx vercel --prod` with the Vercel CLI.
+Optional Vercel: `vercel.json` already contains the SPA rewrite — import the repo at [vercel.com/new](https://vercel.com/new) or `pnpm dlx vercel link && pnpm dlx vercel --prod`.
